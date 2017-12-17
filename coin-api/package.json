@@ -1,0 +1,23 @@
+{
+  "name": "family-point-api",
+  "version": "1.0",
+  "description": "Family Point API",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "npm install",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "swagger"
+  ],
+  "license": "Unlicense",
+  "private": true,
+  "dependencies": {
+    "connect": "^3.2.0",
+    "cors": "^2.8.4",
+    "js-yaml": "^3.3.0",
+    "nem-library": "^0.11.0",
+    "rxjs": "^5.5.5",
+    "swagger-tools": "0.10.1"
+  }
+}

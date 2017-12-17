@@ -1,0 +1,336 @@
+---
+swagger: "2.0"
+info:
+  description: "Family Point API"
+  version: "1.0"
+  title: "Family Point API"
+host: "family-point.peace-coin.org"
+basePath: "/api/v1.0"
+schemes:
+- "http"
+- "https"
+consumes:
+- "application/x-www-form-urlencoded"
+produces:
+- "application/json"
+paths:
+  /users/login:
+    post:
+      tags:
+      - "Users"
+      description: "user login"
+      operationId: "post__users_login"
+      parameters:
+      - name: "method"
+        in: "formData"
+        description: "designate facebook or mail_address."
+        required: true
+        type: "string"
+        enum:
+        - "mail"
+        - "facebook"
+      - name: "mail"
+        in: "formData"
+        description: "email address."
+        required: false
+        type: "string"
+      - name: "password"
+        in: "formData"
+        description: "plain password user entered."
+        required: false
+        type: "string"
+      - name: "openid_access_token"
+        in: "formData"
+        description: "Access token sent from OAuth Server"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Authorize"
+        default:
+          description: "Internal Server Error."
+      x-swagger-router-controller: "Users"
+  /users/me:
+    get:
+      tags:
+      - "Users"
+      summary: ""
+      description: ""
+      operationId: "get__users_me"
+      parameters: []
+      # - name: "token"
+      #   in: "header"
+      #   description: "Use this access token to access the API server"
+      #   required: true
+      #   type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/User"
+      x-swagger-router-controller: "Users"
+  /users/me/logout:
+    post:
+      tags:
+      - "Users"
+      summary: ""
+      description: ""
+      operationId: "post__users_me_logout"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ResultMessage"
+      x-swagger-router-controller: "Users"
+  /users/me/points/{type}/:
+    get:
+      tags:
+      - "Users"
+      summary: ""
+      description: ""
+      operationId: "get__users_me_points"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
+      - name: "type"
+        in: "path"
+        required: true
+        type: "string"
+        default: "thanks"
+        enum:
+        - "thanks"
+        - "message"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/UserPoints"
+      x-swagger-router-controller: "Users"
+  /users/me/transactions:
+    get:
+      tags:
+      - "Users"
+      summary: "v0.1+ | Get transaction's record for each user"
+      operationId: "get__users_me_transactions"
+      parameters: []
+      # - name: "token"
+      #   in: "header"
+      #   description: "Use this access token to access the API server"
+      #   required: true
+      #   type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Transaction"
+      x-swagger-router-controller: "Users"
+  /thanks/send:
+    post:
+      tags:
+      - "Thanks"
+      summary: "v0.1+ | send coins to someone"
+      description: "send coins to someone"
+      operationId: "post__thanks_send"
+      parameters:
+      # - name: "token"
+      #   in: "header"
+      #   description: "Use this access token to access the API server"
+      #   required: true
+      #   type: "string"
+      - name: "received_address"
+        in: "formData"
+        required: true
+        type: "string"
+      - name: "amount"
+        in: "formData"
+        required: true
+        type: "integer"
+      - name: "message"
+        in: "formData"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ResultMessage"
+      x-swagger-router-controller: "Thanks"
+definitions:
+  ResultMessage:
+    required:
+    - "result"
+    properties:
+      result:
+        type: "string"
+        example: "OK"
+        enum:
+        - "OK"
+        - "NG"
+      message:
+        type: "string"
+        example: ""
+        description: "error code"
+  Error:
+    required:
+    - "domain"
+    - "error_subcode"
+    - "error_user_msg"
+    - "error_user_title"
+    - "message"
+    - "reason"
+    properties:
+      message:
+        type: "string"
+        example: "The user not found."
+        description: "Message describing the error in English."
+      domain:
+        type: "string"
+        example: "user_accounts_service"
+        description: "Application service domain."
+        enum:
+        - "c0ban_crowd_mining_portal_service"
+      reason:
+        type: "string"
+        example: "NotFound"
+        description: "Main error code. Upper camel case.\n"
+      error_subcode:
+        type: "integer"
+        format: "int32"
+        example: 11
+        description: "Local error code in the main error."
+      error_user_title:
+        type: "string"
+        example: "ユーザが見つかりませんでした。"
+        description: "Translated title of this error. User readable."
+      error_user_msg:
+        type: "string"
+        example: "ユーザIDが正しいかどうかお確かめください。"
+        description: "Translated message describing some action of this error. User\
+          \ readable."
+  Transaction:
+    type: "object"
+    properties:
+      user_name:
+        type: "string"
+      amount:
+        type: "integer"
+      message:
+        type: "string"
+      timestamp:
+        type: "string"
+        format: "date-time"
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      user_name:
+        type: "string"
+      address:
+        type: "string"
+      balance:
+        type: "integer"
+      increase_coin:
+        type: "integer"
+  Authorize:
+    allOf:
+    - $ref: "#/definitions/ResultMessage"
+    - type: "object"
+      properties:
+        accessToken:
+          type: "string"
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXV0aC5jMGJhbi5qcFwvIiwic3ViIjoiMDAwMDAwMDAwMDAwMDAwMDIwMjAiLCJhdWQiOiJjMGJhbkFwcCIsImV4cCI6MTQ3NzYxMDEzMCwiaWF0IjoxNDc3NjA2NTMwLCJhdXRoX3RpbWUiOjE0Nzc2MDY1MzAsIm5vbmNlIjoiIiwidG9rZW5faWQiOiIwMDAwMDAwMDAwMDAwMDAwMDAwMTIzNDc4Iiwic3RhdGUiOiIiLCJzY29wZSI6IiJ9.Dg4mJAXmHp8rMQKcClU9XuKhaYytXFCgt-6SaDLKjkLkDQ-fHtjrDObchbFMSXghukTfqNmKsXmE9oJfYEg93f2FgBbv1dyJ_1IY7bGW58xs_yYIbiEEMH-WTjlM3Rnxa1h8vHJcp5cmuNjUqr-XzD_09NfCnbmk9Gb_MePbCAk"
+          description: "JWT. (payload example)\n{\n  \"iss\": \"https://auth.c0ban.jp/\"\
+            ,\n  \"sub\": \"00000000000000002020\",\n  \"aud\": \"c0banApp\",\n  \"\
+            exp\": 1477610130,\n  \"iat\": 1477606530,\n  \"auth_time\": 1477606530,\n\
+            \  \"nonce\": \"\",\n  \"token_id\": \"0000000000000000000123478\",\n\
+            \  \"state\": \"\",\n  \"scope\": \"\"\n}\n"
+        refresh_token:
+          type: "string"
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl9pZCI6IjAwMDAwMDAwMDAwMDAwMDAwMDAxMjM0NzgiLCJleHAiOjE0Nzc2MTAxMzAsInN0YXRlIjoiIiwic2NvcGUiOiIifQ.MBy960ttv4fjt1oXJEwvpktvQU6-Kt1prcF-87fBKt0CdbwfBCd2wY4EsSbpBS99Bhi3vkwwg7YfZmOh59xoymvs1XsKaz1u8qmmbkUamSWkLL7vgYZMnLSOBOqVL0fk0oprcTiiUBt1LO8iNGW0svLwSPFsxo4PT_VxP_w0h-U"
+          description: "JWT"
+  UserPoints:
+    type: "object"
+    required:
+    - "my_point"
+    - "type"
+    properties:
+      type:
+        type: "string"
+        enum:
+        - "THANKS"
+        - "MESSAGE"
+      my_point:
+        type: "integer"
+        format: "int64"
+        description: "specific point"
+  Point:
+    type: "object"
+    required:
+    - "point"
+    - "user_name"
+    properties:
+      user_name:
+        type: "string"
+        description: "member's user name"
+      point:
+        type: "integer"
+        format: "int64"
+        description: "use peace coin for someone"
+parameters:
+  accessToken:
+    name: "token"
+    in: "header"
+    description: "Use this access token to access the API server"
+    required: true
+    type: "string"
+responses:
+  400WithDocument:
+    description: "* BadRequest\n* Invalid\n* Required\n"
+    schema:
+      $ref: "#/definitions/Error"
+  401WithDocument:
+    description: "* Required\n* AuthError\n* Expired\n"
+    schema:
+      $ref: "#/definitions/Error"
+  403WithDocument:
+    description: "* Forbidden\n"
+    schema:
+      $ref: "#/definitions/Error"
+  404WithDocument:
+    description: "* NotFound\n"
+    schema:
+      $ref: "#/definitions/Error"
+  409WithDocument:
+    description: "* Conflict\n"
+    schema:
+      $ref: "#/definitions/Error"
+  413WithDocument:
+    description: "* UploadTooLarge\n"
+    schema:
+      $ref: "#/definitions/Error"
+  415WithDocument:
+    description: "* UnsupportedMediaType\n"
+    schema:
+      $ref: "#/definitions/Error"
+  500WithDocument:
+    description: "* InternalError\n"
+    schema:
+      $ref: "#/definitions/Error"
+  503WithDocument:
+    description: "* NotReady\n"
+    schema:
+      $ref: "#/definitions/Error"

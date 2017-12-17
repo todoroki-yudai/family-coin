@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+  coin-api:
+    container_name: coin-api
+    image: coin-api
+    build:
+      context: ./coin-api
+    volumes:
+      - ./coin-api:/coin-api
+      - /coin-api/node_modules
+    ports:
+      - "18080:18080"
+  coin-app:
+    container_name: coin-app
+    image: coin-app
+    build:
+      context: ./coin-app
+    volumes:
+      - ./coin-app:/coin-app
+      - /coin-app/node_modules
+    ports:
+      - "8080:8080"
