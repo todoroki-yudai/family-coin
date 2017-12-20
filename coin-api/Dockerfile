@@ -6,6 +6,6 @@ RUN npm install -g typescript typings
 COPY . /coin-api
 WORKDIR /coin-api
 
-RUN npm install
+RUN yarn install
 
 CMD ["/sbin/init"]
