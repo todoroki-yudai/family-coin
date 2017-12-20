@@ -18,6 +18,11 @@ var options = {
   useStubs: process.env.NODE_ENV === 'development' // Conditionally turn on stubs (mock mode)
 };
 
+// Initialize NEMLibrary for TEST_NET Network
+var nem_library = require("nem-library");
+// TODO(todoroki): change network by config file
+nem_library.NEMLibrary.bootstrap(nem_library.NetworkTypes.TEST_NET);
+
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
 var spec = fs.readFileSync(path.join(__dirname,'api/swagger.yaml'), 'utf8');
 var swaggerDoc = jsyaml.safeLoad(spec);
