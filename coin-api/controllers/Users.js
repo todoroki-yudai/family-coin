@@ -2,7 +2,11 @@
 
 var url = require('url');
 
-var Users = require('./UsersService');
+var Users = require('../services/UsersService');
+
+module.exports.post__users_entry = function post__users_entry (req, res, next) {
+  Users.post__users_entry(req.swagger.params, res, next);
+};
 
 module.exports.get__users_me = function get__users_me (req, res, next) {
   Users.get__users_me(req.swagger.params, res, next);
