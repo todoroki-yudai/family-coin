@@ -32,3 +32,23 @@ services:
       - /coin-app/node_modules
     ports:
       - "8080:8080"
+  coin-batch:
+    container_name: coin-batch
+    image: coin-batch
+    build:
+      context: ./coin-batch
+    volumes:
+      - ./coin-batch:/coin-batch
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=family
+    links:
+      - mysql
+    ports:
+       - 8080:80
+    volumes:
+       - "./phpmyadmin/sessions:/sessions"
