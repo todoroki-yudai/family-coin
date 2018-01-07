@@ -4,16 +4,16 @@ import lib.api as api
 import lib.const as const
 
 
-def send_mosaic(address, point):
-    if const.OWNER_ADDRESS == address:
+def send_mosaic(sender_address, receiver_address, point):
+    if sender_address == receiver_address:
         return None
     url = '{}{}'.format(const.API_BASE_URL, '/thanks/send')
     header = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'token': const.OWNER_ADDRESS
+        'token': sender_address
     }
     body = {
-        'received_address': address,
+        'received_address': receiver_address,
         'amount': point,
         'message': 'thanks point',
         'usemosaic': 'false',  # TODO: use config

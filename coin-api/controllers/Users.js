@@ -12,6 +12,10 @@ module.exports.get__users_balances = function get__users_balances (req, res, nex
   Users.get__users_balances(req.swagger.params, res, next);
 };
 
+module.exports.get__users_balances_latest = function get__users_balances_latest (req, res, next) {
+  Users.get__users_balances_latest(req.swagger.params, res, next);
+};
+
 module.exports.get__users_me = function get__users_me (req, res, next) {
   Users.get__users_me(req.swagger.params, res, next);
 };

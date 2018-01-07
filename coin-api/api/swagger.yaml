@@ -68,6 +68,25 @@ paths:
           schema:
             $ref: "#/definitions/UserBalance"
       x-swagger-router-controller: "Users"
+  /users/balances/latest:
+    get:
+      tags:
+      - "Users"
+      summary: ""
+      description: ""
+      operationId: "get__users_balances_latest"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/UserBalance"
+      x-swagger-router-controller: "Users"
   /users/login:
     post:
       tags:

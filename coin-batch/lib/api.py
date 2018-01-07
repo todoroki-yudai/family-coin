@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 import pprint
 import requests
 import urllib
@@ -24,7 +23,6 @@ def call_get_api(url, body={}, header={}):
 def call_post_api(url, body={}, header={}):
     response = requests.post(
         url,
-        # json.dumps(body),
         body,
         headers=header
     )

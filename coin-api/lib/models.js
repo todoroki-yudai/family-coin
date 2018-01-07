@@ -45,6 +45,21 @@ UserBalanceLog.getBalance = async (address) => {
     resolve(balance);
   });
 };
+UserBalanceLog.getBalanceLatest = async () => {
+  sql = `
+  SELECT a.*
+  FROM users_balance_log AS a
+  INNER JOIN (SELECT address, MAX(created_at) AS most_recently_created_at
+                                FROM users_balance_log
+                                GROUP BY address) AS b
+  ON a.address = b.address
+  AND a.created_at = b.most_recently_created_at;
+  `;
+  let logs = await sequelize.query(sql, { type: sequelize.QueryTypes.SELECT})
+  return new Promise((resolve, reject) => {
+    resolve(logs);
+  });
+};
 module.exports.UserBalanceLog = UserBalanceLog
 
 

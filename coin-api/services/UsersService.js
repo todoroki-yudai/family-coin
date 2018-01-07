@@ -49,6 +49,31 @@ const get__users_balances = async (args, res, next) => {
 }
 module.exports.get__users_balances = get__users_balances
 
+const get__users_balances_latest = async (args, res, next) => {
+  try {
+    // TODO token check
+    let balances = await models.UserBalanceLog.getBalanceLatest()
+
+    let body = {};
+    body['application/json'] = balances;
+
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
+  }
+  catch (err) {
+    console.log(err);
+    let body = {};
+    body['application/json'] = {
+      'result' : 'NG',
+      'message' : err
+    };
+    res.status(500);
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
+  }
+}
+module.exports.get__users_balances_latest = get__users_balances_latest
+
 const post__users_entry = async (args, res, next) => {
   /**
    * entry user info

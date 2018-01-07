@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import lib.const as const
 import lib.mosaic as mosaic
 import lib.thanks_point as tpoint
 
@@ -9,4 +10,4 @@ if __name__ == '__main__':
     # send mosaic
     for address, point in depreciation_points.items():
         # TODO; insert in large quantity post
-        mosaic.send_mosaic(address, point)
+        mosaic.send_mosaic(address, const.OWNER_ADDRESS, point)
