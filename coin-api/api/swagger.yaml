@@ -39,6 +39,35 @@ paths:
         default:
           description: "Internal Server Error."
       x-swagger-router-controller: "Users"
+  /users/balances:
+    get:
+      tags:
+      - "Users"
+      summary: ""
+      description: ""
+      operationId: "get__users_balances"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
+      - name: "starting_date"
+        in: "query"
+        required: true
+        type: "string"
+        format: "date"
+      - name: "end_date"
+        in: "query"
+        required: true
+        type: "string"
+        format: "date"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/UserBalance"
+      x-swagger-router-controller: "Users"
   /users/login:
     post:
       tags:
@@ -84,12 +113,12 @@ paths:
       summary: ""
       description: ""
       operationId: "get__users_me"
-      parameters: []
-      # - name: "token"
-      #   in: "header"
-      #   description: "Use this access token to access the API server"
-      #   required: true
-      #   type: "string"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
       responses:
         200:
           description: "OK"
@@ -148,12 +177,22 @@ paths:
       - "Users"
       summary: "v0.1+ | Get transaction's record for each user"
       operationId: "get__users_me_transactions"
-      parameters: []
-      # - name: "token"
-      #   in: "header"
-      #   description: "Use this access token to access the API server"
-      #   required: true
-      #   type: "string"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
+      - name: "starting_date"
+        in: "query"
+        required: true
+        type: "string"
+        format: "date"
+      - name: "end_date"
+        in: "query"
+        required: true
+        type: "string"
+        format: "date"
       responses:
         200:
           description: "Successful response"
@@ -170,11 +209,11 @@ paths:
       description: "send coins to someone"
       operationId: "post__thanks_send"
       parameters:
-      # - name: "token"
-      #   in: "header"
-      #   description: "Use this access token to access the API server"
-      #   required: true
-      #   type: "string"
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
       - name: "received_address"
         in: "formData"
         required: true
@@ -182,16 +221,56 @@ paths:
       - name: "amount"
         in: "formData"
         required: true
-        type: "integer"
+        type: "number"
+        format: "float"
       - name: "message"
         in: "formData"
         required: true
         type: "string"
+      - name: "usemosaic"
+        in: "formData"
+        required: true
+        type: "string"
+        default: "false"
+        enum:
+          - "true"
+          - "false"
       responses:
         200:
           description: "OK"
           schema:
             $ref: "#/definitions/ResultMessage"
+      x-swagger-router-controller: "Thanks"
+  /thanks/transactions:
+    get:
+      tags:
+      - "Thanks"
+      summary: "v0.1+ | find transactions"
+      description: "find transactions"
+      operationId: "get__thanks_transactions"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
+      - name: "starting_date"
+        in: "query"
+        required: true
+        type: "string"
+        format: "date"
+      - name: "end_date"
+        in: "query"
+        required: true
+        type: "string"
+        format: "date"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Transaction"
       x-swagger-router-controller: "Thanks"
 definitions:
   ResultMessage:
@@ -248,28 +327,44 @@ definitions:
   Transaction:
     type: "object"
     properties:
-      user_name:
+      sender_address:
+        type: "string"
+      receiver_address:
         type: "string"
       amount:
         type: "integer"
       message:
         type: "string"
-      timestamp:
+      created_at:
         type: "string"
         format: "date-time"
   User:
     type: "object"
     properties:
       id:
-        type: "string"
+        type: "integer"
       user_name:
         type: "string"
       address:
         type: "string"
       balance:
         type: "integer"
+      nem_balance:
+        type: "integer"
       increase_coin:
         type: "integer"
+  UserBalance:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      address:
+        type: "string"
+      balance:
+        type: "integer"
+      created_at:
+        type: "string"
+        format: "date-time"
   Authorize:
     allOf:
     - $ref: "#/definitions/ResultMessage"

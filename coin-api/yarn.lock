@@ -51,6 +51,12 @@
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/@types/utf8/-/utf8-2.1.6.tgz#430cabb71a42d0a3613cce5621324fe4f5a25753"
 
+aa@^0.1.40:
+  version "0.1.40"
+  resolved "https://registry.yarnpkg.com/aa/-/aa-0.1.40.tgz#decda211e17074ea5bcf19f85d06734c682ad316"
+  dependencies:
+    promise-thunk ">=0.1.16"
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -1767,7 +1773,7 @@ multer@^1.1.0:
     type-is "^1.6.4"
     xtend "^4.0.0"
 
-mysql2@^1.5.1:
+mysql2@^2.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/mysql2/-/mysql2-1.5.1.tgz#2411d6fb958af86b2304b7a53bc54b26e77e682b"
   dependencies:
@@ -1993,6 +1999,10 @@ process-nextick-args@~1.0.6:
 process@~0.5.1:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/process/-/process-0.5.2.tgz#1638d8a8e34c2f440a91db95ab9aeb677fc185cf"
+
+promise-thunk@>=0.1.16:
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/promise-thunk/-/promise-thunk-0.1.17.tgz#0df2784b8d143d56a21dc383025360510d04e33b"
 
 pseudomap@^1.0.2:
   version "1.0.2"

@@ -1,7 +1,8 @@
 FROM node:9.2.1
 
-RUN npm install --quiet --global \
-      vue-cli
+RUN cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
+    npm install --quiet --global \
+    vue-cli
     # npm i -g npm to update
 
 COPY . /coin-app

@@ -8,6 +8,10 @@ module.exports.post__users_entry = function post__users_entry (req, res, next) {
   Users.post__users_entry(req.swagger.params, res, next);
 };
 
+module.exports.get__users_balances = function get__users_balances (req, res, next) {
+  Users.get__users_balances(req.swagger.params, res, next);
+};
+
 module.exports.get__users_me = function get__users_me (req, res, next) {
   Users.get__users_me(req.swagger.params, res, next);
 };

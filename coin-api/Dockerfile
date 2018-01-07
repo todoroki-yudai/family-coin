@@ -1,6 +1,7 @@
 FROM node:9.2.1
 
-RUN npm install -g typescript typings
+RUN cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
+  npm install -g typescript typings
 # RUN npm install nem-library rxjs
 
 COPY . /coin-api

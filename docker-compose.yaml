@@ -22,6 +22,8 @@ services:
       - /coin-api/node_modules
     ports:
       - "18080:18080"
+    links:
+      - mysql
   coin-app:
     container_name: coin-app
     image: coin-app
