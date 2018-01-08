@@ -113,8 +113,8 @@ const post__users_entry = async (args, res, next) => {
 
       let values = {};
       values['application/json'] = {
-        'result' : 'OK',
-        'message' : ''
+        'access_token' : simpleWallet.address.value,
+        'expires_in' : '999999999' // TODO: implements
       };
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(values[Object.keys(values)[0]] || {}, null, 2));
@@ -240,7 +240,7 @@ const get__users_me_transactions = async (args, res, next) => {
 }
 module.exports.get__users_me_transactions = get__users_me_transactions
 
-module.exports.post__users_login = function(args, res, next) {
+module.exports.post__users_login = async(args, res, next) => {
   /**
    * user login
    *
@@ -250,14 +250,33 @@ module.exports.post__users_login = function(args, res, next) {
    * openid_access_token String Access token sent from OAuth Server (optional)
    * returns Authorize
    **/
-  var examples = {};
-  examples['application/json'] = '';
-  if (Object.keys(examples).length > 0) {
+    // create nem address
+    let username = args.username.value;
+    // TODO validation password
+    let crptoPassword = crypto.generateHash(args.password.value);
+
+    // save user info to database
+    let user = await models.User.findOne(
+      {
+        'where': {'username': username, 'password': crptoPassword},
+      }
+    )
+
+    let values = {};
+    if (user) {
+      values['application/json'] = {
+        'access_token' : user.address, // TODO: change currect accesstoken
+        'expires_in' : '999999999' // TODO: implements
+      };
+    }
+    else {
+      values['application/json'] = {
+        'result' : 'NG',
+        'message' : 'login failed'
+      };
+    }
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
+    res.end(JSON.stringify(values[Object.keys(values)[0]] || {}, null, 2));
 }
 
 module.exports.post__users_me_logout = function(args, res, next) {

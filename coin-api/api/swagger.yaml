@@ -33,9 +33,9 @@ paths:
         type: "string"
       responses:
         200:
-          description: "Success"
+          description: OK
           schema:
-            $ref: "#/definitions/ResultMessage"
+            $ref: "#/definitions/AuthInfo"
         default:
           description: "Internal Server Error."
       x-swagger-router-controller: "Users"
@@ -94,17 +94,9 @@ paths:
       description: "user login"
       operationId: "post__users_login"
       parameters:
-      - name: "method"
+      - name: "username"
         in: "formData"
-        description: "designate facebook or mail_address."
-        required: true
-        type: "string"
-        enum:
-        - "mail"
-        - "facebook"
-      - name: "mail"
-        in: "formData"
-        description: "email address."
+        description: "user name."
         required: false
         type: "string"
       - name: "password"
@@ -112,16 +104,11 @@ paths:
         description: "plain password user entered."
         required: false
         type: "string"
-      - name: "openid_access_token"
-        in: "formData"
-        description: "Access token sent from OAuth Server"
-        required: false
-        type: "string"
       responses:
         200:
           description: "Success"
           schema:
-            $ref: "#/definitions/Authorize"
+            $ref: "#/definitions/AuthInfo"
         default:
           description: "Internal Server Error."
       x-swagger-router-controller: "Users"
@@ -306,6 +293,19 @@ definitions:
         type: "string"
         example: ""
         description: "error code"
+  AuthInfo:
+    required:
+      - access_token
+      - expires_in
+    properties:
+      access_token:
+        type: string
+        description: |
+          address
+        example: TODO
+      expires_in:
+        type: integer
+        description: The expiration time for access_token in second.
   Error:
     required:
     - "domain"
@@ -384,23 +384,6 @@ definitions:
       created_at:
         type: "string"
         format: "date-time"
-  Authorize:
-    allOf:
-    - $ref: "#/definitions/ResultMessage"
-    - type: "object"
-      properties:
-        accessToken:
-          type: "string"
-          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXV0aC5jMGJhbi5qcFwvIiwic3ViIjoiMDAwMDAwMDAwMDAwMDAwMDIwMjAiLCJhdWQiOiJjMGJhbkFwcCIsImV4cCI6MTQ3NzYxMDEzMCwiaWF0IjoxNDc3NjA2NTMwLCJhdXRoX3RpbWUiOjE0Nzc2MDY1MzAsIm5vbmNlIjoiIiwidG9rZW5faWQiOiIwMDAwMDAwMDAwMDAwMDAwMDAwMTIzNDc4Iiwic3RhdGUiOiIiLCJzY29wZSI6IiJ9.Dg4mJAXmHp8rMQKcClU9XuKhaYytXFCgt-6SaDLKjkLkDQ-fHtjrDObchbFMSXghukTfqNmKsXmE9oJfYEg93f2FgBbv1dyJ_1IY7bGW58xs_yYIbiEEMH-WTjlM3Rnxa1h8vHJcp5cmuNjUqr-XzD_09NfCnbmk9Gb_MePbCAk"
-          description: "JWT. (payload example)\n{\n  \"iss\": \"https://auth.c0ban.jp/\"\
-            ,\n  \"sub\": \"00000000000000002020\",\n  \"aud\": \"c0banApp\",\n  \"\
-            exp\": 1477610130,\n  \"iat\": 1477606530,\n  \"auth_time\": 1477606530,\n\
-            \  \"nonce\": \"\",\n  \"token_id\": \"0000000000000000000123478\",\n\
-            \  \"state\": \"\",\n  \"scope\": \"\"\n}\n"
-        refresh_token:
-          type: "string"
-          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl9pZCI6IjAwMDAwMDAwMDAwMDAwMDAwMDAxMjM0NzgiLCJleHAiOjE0Nzc2MTAxMzAsInN0YXRlIjoiIiwic2NvcGUiOiIifQ.MBy960ttv4fjt1oXJEwvpktvQU6-Kt1prcF-87fBKt0CdbwfBCd2wY4EsSbpBS99Bhi3vkwwg7YfZmOh59xoymvs1XsKaz1u8qmmbkUamSWkLL7vgYZMnLSOBOqVL0fk0oprcTiiUBt1LO8iNGW0svLwSPFsxo4PT_VxP_w0h-U"
-          description: "JWT"
   UserPoints:
     type: "object"
     required:
