@@ -13,7 +13,7 @@ def send_mosaic(sender_address, receiver_address, point):
         'token': sender_address
     }
     body = {
-        'received_address': receiver_address,
+        'receiver_address': receiver_address,
         'amount': point,
         'message': 'thanks point',
         'usemosaic': 'false',  # TODO: use config

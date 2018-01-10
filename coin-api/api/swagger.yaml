@@ -11,6 +11,7 @@ schemes:
 - "https"
 consumes:
 - "application/x-www-form-urlencoded"
+- "application/json"
 produces:
 - "application/json"
 paths:
@@ -191,12 +192,12 @@ paths:
         type: "string"
       - name: "starting_date"
         in: "query"
-        required: true
+        required: false
         type: "string"
         format: "date"
       - name: "end_date"
         in: "query"
-        required: true
+        required: false
         type: "string"
         format: "date"
       responses:
@@ -220,7 +221,7 @@ paths:
         description: "Use this access token to access the API server"
         required: true
         type: "string"
-      - name: "received_address"
+      - name: "receiver_address"
         in: "formData"
         required: true
         type: "string"
@@ -295,14 +296,12 @@ definitions:
         description: "error code"
   AuthInfo:
     required:
-      - access_token
+      - token
       - expires_in
     properties:
-      access_token:
+      token:
         type: string
-        description: |
-          address
-        example: TODO
+        description: token
       expires_in:
         type: integer
         description: The expiration time for access_token in second.
@@ -362,9 +361,11 @@ definitions:
     properties:
       id:
         type: "integer"
-      user_name:
+      username:
         type: "string"
       address:
+        type: "string"
+      avatar:
         type: "string"
       balance:
         type: "integer"
@@ -372,6 +373,14 @@ definitions:
         type: "integer"
       increase_coin:
         type: "integer"
+      roles:
+        type: array
+        description: roles
+        items:
+          type: string
+      introduction:
+        type: string
+        description: introduction
   UserBalance:
     type: "object"
     properties:
