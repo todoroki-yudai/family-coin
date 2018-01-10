@@ -42,7 +42,7 @@ const get__users_balances = async (args, res, next) => {
       'result' : 'NG',
       'message' : err
     };
-    res.status(500);
+    res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
   }
@@ -67,7 +67,7 @@ const get__users_balances_latest = async (args, res, next) => {
       'result' : 'NG',
       'message' : err
     };
-    res.status(500);
+    res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
   }
@@ -113,7 +113,7 @@ const post__users_entry = async (args, res, next) => {
 
       let values = {};
       values['application/json'] = {
-        'access_token' : simpleWallet.address.value,
+        'token' : simpleWallet.address.value,
         'expires_in' : '999999999' // TODO: implements
       };
       res.setHeader('Content-Type', 'application/json');
@@ -126,7 +126,7 @@ const post__users_entry = async (args, res, next) => {
       'result' : 'NG',
       'message' : err
     };
-    res.status(500);
+    res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
   }
@@ -136,9 +136,6 @@ module.exports.post__users_entry = post__users_entry
 
 const get__users_me = async (args, res, next) => {
   try {
-    // console.log(args.token.value);
-    // var address = 'TC4DJGOXP3GMXHQ45KE7ORFMG3P5GIJZV6R4RJEL'; // test-user
-    // var address = 'TDC54V-STM3GN-FMR6IV-VDQNVH-KEIZ3A-AN55RK-DCGP'; // test-todoroki
     // TODO get address from access token. following value is raw address. it's bad source.
     var address = args.token.value;
     // can't not use "var". because "ReferenceError: user is not defined" is occured.
@@ -152,7 +149,11 @@ const get__users_me = async (args, res, next) => {
       'nem_balance' : walletInfo.nemBalance,
       'address' : walletInfo.address,
       'increase_coin' : -1, // TODO 実装する
-      'userid' : user.get('id')
+      'username' : user.get('username'),
+      'roles' : ['admin'], // TODO implement
+      'avatar' : 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif', // TODO implement
+      'introduction' : 'Super Admin', // TODO implement
+      'id' : user.get('id')
     };
 
     res.setHeader('Content-Type', 'application/json');
@@ -165,7 +166,7 @@ const get__users_me = async (args, res, next) => {
       'result' : 'NG',
       'message' : err
     };
-    res.status(500);
+    res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
   }
@@ -207,17 +208,23 @@ const get__users_me_transactions = async (args, res, next) => {
      let startingDate = args.starting_date.value
      let endDate = args.end_date.value
      // can't not use "var". because "ReferenceError: user is not defined" is occured.
-     let transactions = await models.Transaction.findAll({
-       where: {
-        created_at: {
-          $between: [startingDate, endDate]
-        },
-        sender_address: address,
+
+     let whereMap = {
         [Op.or]: [
+          { sender_address: address },
           { receiver_address: address }
         ]
        }
-     })
+     if (startingDate && endDate) {
+       whereMap['created_at'] = {$between: [startingDate, endDate]}
+     }
+     else if (startingDate) {
+       whereMap['created_at'] = {[gte]: startingDate}
+     }
+     else if (endDate) {
+       whereMap['created_at'] = {[lte]: endDate}
+     }
+     let transactions = await models.Transaction.findAll({ where: whereMap });
 
      let body = {};
      body['application/json'] = transactions;
@@ -232,7 +239,7 @@ const get__users_me_transactions = async (args, res, next) => {
        'result' : 'NG',
        'message' : err
      };
-     // res.status(500);
+     res.statusCode = 500;
      res.setHeader('Content-Type', 'application/json');
      res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
    }
@@ -250,6 +257,7 @@ module.exports.post__users_login = async(args, res, next) => {
    * openid_access_token String Access token sent from OAuth Server (optional)
    * returns Authorize
    **/
+   console.log(args);
     // create nem address
     let username = args.username.value;
     // TODO validation password
@@ -265,15 +273,16 @@ module.exports.post__users_login = async(args, res, next) => {
     let values = {};
     if (user) {
       values['application/json'] = {
-        'access_token' : user.address, // TODO: change currect accesstoken
-        'expires_in' : '999999999' // TODO: implements
+        'token' : user.address, // TODO: change currect accesstoken
+        'expires_in' : '999999999' // TODO: implement
       };
     }
     else {
       values['application/json'] = {
-        'result' : 'NG',
-        'message' : 'login failed'
+        'token' : '',
+        'expires_in' : '0' // TODO: implement
       };
+      res.statusCode = 401;
     }
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(values[Object.keys(values)[0]] || {}, null, 2));

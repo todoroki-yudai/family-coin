@@ -41,7 +41,7 @@ const get__thanks_transactions = async (args, res, next) => {
        'result' : 'NG',
        'message' : err
      };
-     res.status(500);
+     res.statusCode = 500;
      res.setHeader('Content-Type', 'application/json');
      res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
    }
@@ -54,7 +54,7 @@ const post__thanks_send = async (args, res, next) => {
    * send coins to someone
    *
    * token String Use this access token to access the API server
-   * received_address String
+   * receiver_address String
    * amount Integer
    * message String
    * returns ResultMessage
@@ -70,7 +70,7 @@ const post__thanks_send = async (args, res, next) => {
 
     // TODO: get address from access token. following value is raw address. It's not very well
     var senderAddress = args.token.value;
-    var receiverAddress = args.received_address.value;
+    var receiverAddress = args.receiver_address.value;
 
     console.log(senderAddress);
     console.log(receiverAddress);
@@ -134,9 +134,8 @@ const post__thanks_send = async (args, res, next) => {
       'result' : 'NG',
       'message' : err
     };
-    // TODO : set status code
+    res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
-    // res.status(500).end <- bad
     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
   }
 }
