@@ -10,24 +10,41 @@ var models = require('../lib/models');
 var mosaic = require('../lib/mosaic');
 var wallet = require('../lib/wallet');
 
-const get__users_balances = async (args, res, next) => {
+const get__users_balances = function(args, res, next) {
+  get_users_balances(args, res, next, null)
+}
+module.exports.get__users_balances = get__users_balances
+
+const get__users_me_balances = function(args, res, next) {
+  get_users_balances(args, res, next, args.token.value)
+}
+module.exports.get__users_me_balances = get__users_me_balances
+
+const get_users_balances = async(args, res, next, address) => {
   try {
     // TODO get address from access token. following value is raw address. it's bad source.
-    var address = args.token.value;
     let startingDate = args.starting_date.value
     let endDate = args.end_date.value
-    // can't not use "var". because "ReferenceError: user is not defined" is occured.
+    let whereMap = {}
+    if (address) {
+      whereMap['address'] = address
+    }
+    if (startingDate && endDate) {
+      whereMap['created_at'] = {$between: [startingDate, endDate]}
+    }
+    else if (startingDate) {
+      whereMap['created_at'] = {[gte]: startingDate}
+    }
+    else if (endDate) {
+      whereMap['created_at'] = {[lte]: endDate}
+    }
     let balances = await models.UserBalanceLog.findAll({
-      where: {
-       created_at: {
-         $between: [startingDate, endDate]
-       }
-     },
-     order: [
-       [ 'address', 'ASC' ],
-       [ 'created_at', 'ASC' ]
-     ]
-    })
+      where: whereMap,
+      order: [
+        [ 'address', 'ASC' ],
+        [ 'created_at', 'ASC' ]
+      ]
+    });
 
     let body = {};
     body['application/json'] = balances;
@@ -47,7 +64,6 @@ const get__users_balances = async (args, res, next) => {
     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
   }
 }
-module.exports.get__users_balances = get__users_balances
 
 const get__users_balances_latest = async (args, res, next) => {
   try {

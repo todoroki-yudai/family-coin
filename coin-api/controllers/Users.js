@@ -28,6 +28,10 @@ module.exports.get__users_me_transactions = function get__users_me_transactions 
   Users.get__users_me_transactions(req.swagger.params, res, next);
 };
 
+module.exports.get__users_me_balances = function get__users_me_balances (req, res, next) {
+  Users.get__users_me_balances(req.swagger.params, res, next);
+};
+
 module.exports.post__users_login = function post__users_login (req, res, next) {
   Users.post__users_login(req.swagger.params, res, next);
 };

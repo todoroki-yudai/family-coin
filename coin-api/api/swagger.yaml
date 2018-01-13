@@ -208,6 +208,36 @@ paths:
             items:
               $ref: "#/definitions/Transaction"
       x-swagger-router-controller: "Users"
+  /users/me/balances:
+    get:
+      tags:
+      - "Users"
+      summary: "v0.1+ | Get user's balances record for each user"
+      operationId: "get__users_me_balances"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
+      - name: "starting_date"
+        in: "query"
+        required: false
+        type: "string"
+        format: "date"
+      - name: "end_date"
+        in: "query"
+        required: false
+        type: "string"
+        format: "date"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/UserBalance"
+      x-swagger-router-controller: "Users"
   /thanks/send:
     post:
       tags:
