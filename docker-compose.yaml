@@ -31,9 +31,9 @@ services:
       context: ./coin-app
     volumes:
       - ./coin-app:/coin-app
-      - /coin-app/node_modules
+      - /coin-app/vue-element-admin/node_modules
     ports:
-      - "8080:8080"
+      - "9527:9527"
   coin-batch:
     container_name: coin-batch
     image: coin-batch
