@@ -39,6 +39,7 @@ const get_users_balances = async(args, res, next, address) => {
       whereMap['created_at'] = {[lte]: endDate}
     }
     let balances = await models.UserBalanceLog.findAll({
+      attributes: ['id', 'address', 'balance', 'created_at'],
       where: whereMap,
       order: [
         [ 'address', 'ASC' ],
