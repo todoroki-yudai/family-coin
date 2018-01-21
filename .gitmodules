@@ -1,0 +1,3 @@
+[submodule "coin-app/vue-element-admin"]
+	path = coin-app/vue-element-admin
+	url = https://github.com/todoroki-yudai/vue-element-admin.git
