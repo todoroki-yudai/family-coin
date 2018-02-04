@@ -31,3 +31,14 @@ CREATE TABLE transactions (
   deleted_at datetime not null default current_timestamp,
   primary key (id)
 );
+
+CREATE TABLE thanks_term (
+  id int(11) unsigned not null auto_increment,
+  start_date datetime not null,
+  end_date datetime not null,
+  is_sent tinyint(1) not null default '0',
+  created_at datetime not null default current_timestamp,
+  updated_at datetime not null default current_timestamp on update current_timestamp,
+  deleted_at datetime not null default current_timestamp,
+  primary key (id)
+);

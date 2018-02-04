@@ -7,10 +7,10 @@ import lib.api as api
 import lib.const as const
 
 
-def _get_total_send_point(starting_date, end_date):
+def _get_total_send_point(start_date, end_date):
     """Sum user's send point"""
     user_points = {}
-    transactions = _find_transactions(starting_date, end_date)
+    transactions = _find_transactions(start_date, end_date)
     for transaction in transactions:
         if transaction['sender_address'] not in user_points:
             user_points[transaction['sender_address']] = 0
@@ -18,10 +18,10 @@ def _get_total_send_point(starting_date, end_date):
     return user_points
 
 
-def _find_transactions(starting_date, end_date, user=None):
+def _find_transactions(start_date, end_date, user=None):
     url = '{}{}'.format(const.API_BASE_URL, '/thanks/transactions/')
     body = {
-        'starting_date': starting_date.strftime('%Y-%m-%d'),
+        'start_date': start_date.strftime('%Y-%m-%d'),
         'end_date': end_date.strftime('%Y-%m-%d')
     }
     header = {
@@ -31,10 +31,10 @@ def _find_transactions(starting_date, end_date, user=None):
     return json.loads(response.text)
 
 
-def _get_most_balances(starting_date, end_date):
+def _get_most_balances(start_date, end_date):
     """Get the highest balance"""
     user_balances = {}
-    balances = _find_balances(starting_date, end_date)
+    balances = _find_balances(start_date, end_date)
     for balance in balances:
         if balance['address'] not in user_balances:
             user_balances[balance['address']] = \
@@ -46,11 +46,11 @@ def _get_most_balances(starting_date, end_date):
     return user_balances
 
 
-def _find_balances(starting_date=None, end_date=None):
+def _find_balances(start_date=None, end_date=None):
     url = '{}{}'.format(const.API_BASE_URL, '/users/balances/')
     body = {}
-    if starting_date:
-        body['starting_date'] = starting_date.strftime('%Y-%m-%d')
+    if start_date:
+        body['start_date'] = start_date.strftime('%Y-%m-%d')
     if end_date:
         body['end_date'] = end_date.strftime('%Y-%m-%d')
     header = {
@@ -79,7 +79,7 @@ def calculate_depreciation_points():
     return user_balances
 
 
-def calculate_thanks_points(starting_date, end_date):
+def calculate_thanks_points(start_date, end_date):
     def merge_dict_values(*dicts):
         r = defaultdict(set)
         for d in dicts:
@@ -87,12 +87,13 @@ def calculate_thanks_points(starting_date, end_date):
                 r[k].add(v)
         return r
 
-    send_points = _get_total_send_point(starting_date, end_date)
-    most_balances = _get_most_balances(starting_date, end_date)
+    send_points = _get_total_send_point(start_date, end_date)
+    most_balances = _get_most_balances(start_date, end_date)
     dic_merged = merge_dict_values(send_points, most_balances)
     dic_rev = {address: min(v) for address, v in dic_merged.items()}
 
     # remove owner point
-    del dic_rev[const.OWNER_ADDRESS]
+    if const.OWNER_ADDRESS in dic_rev:
+        del dic_rev[const.OWNER_ADDRESS]
 
     return dic_rev

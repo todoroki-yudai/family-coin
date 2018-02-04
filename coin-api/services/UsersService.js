@@ -23,7 +23,7 @@ module.exports.get__users_me_balances = get__users_me_balances
 const get_users_balances = async(args, res, next, address) => {
   try {
     // TODO get address from access token. following value is raw address. it's bad source.
-    let startingDate = args.starting_date.value
+    let startingDate = args.start_date.value
     let endDate = args.end_date.value
     let whereMap = {}
     if (address) {
@@ -159,8 +159,15 @@ const get__users_me = async (args, res, next) => {
     let user = await models.User.findOne({ where: {address: address} })
     let walletInfo = await wallet.getInfo(address)
 
+    // delete
+    let username = user.get('username')
+    let password = user.get('password')
+    let privatekey = crypto.generatePrivateKey(password);
+    console.log(privatekey);
+    // delete
+
     let body = {};
-    console.log(walletInfo);
+    // console.log(walletInfo);
     body['application/json'] = {
       'balance' : walletInfo.balance,
       'nem_balance' : walletInfo.nemBalance,
@@ -222,7 +229,7 @@ const get__users_me_transactions = async (args, res, next) => {
    try {
      // TODO get address from access token. following value is raw address. it's bad source.
      let address = args.token.value;
-     let startingDate = args.starting_date.value
+     let startingDate = args.start_date.value
      let endDate = args.end_date.value
      // can't not use "var". because "ReferenceError: user is not defined" is occured.
 

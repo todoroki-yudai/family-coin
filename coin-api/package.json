@@ -1,6 +1,6 @@
 {
   "name": "family-point-api",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "Family Point API",
   "main": "index.js",
   "scripts": {
@@ -16,6 +16,7 @@
     "connect": "^3.2.0",
     "cors": "^2.8.4",
     "js-yaml": "^3.3.0",
+    "moment": "^2.20.1",
     "mysql2": "^1.5.1",
     "nem-library": "^0.11.0",
     "rxjs": "^5.5.5",

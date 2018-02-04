@@ -53,7 +53,7 @@ paths:
         description: "Use this access token to access the API server"
         required: true
         type: "string"
-      - name: "starting_date"
+      - name: "start_date"
         in: "query"
         required: true
         type: "string"
@@ -190,7 +190,7 @@ paths:
         description: "Use this access token to access the API server"
         required: true
         type: "string"
-      - name: "starting_date"
+      - name: "start_date"
         in: "query"
         required: false
         type: "string"
@@ -220,7 +220,7 @@ paths:
         description: "Use this access token to access the API server"
         required: true
         type: "string"
-      - name: "starting_date"
+      - name: "start_date"
         in: "query"
         required: false
         type: "string"
@@ -291,7 +291,7 @@ paths:
         description: "Use this access token to access the API server"
         required: true
         type: "string"
-      - name: "starting_date"
+      - name: "start_date"
         in: "query"
         required: true
         type: "string"
@@ -308,6 +308,71 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Transaction"
+      x-swagger-router-controller: "Thanks"
+  /thanks/term:
+    get:
+      tags:
+      - "Thanks"
+      summary: "v0.1+ | get thanks point term"
+      description: "get thanks point term"
+      operationId: "get__thanks_term"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
+      - name: "type"
+        in: "query"
+        type: "string"
+        enum:
+        - "specify"
+        - "latest"
+      - name: "target_date"
+        in: "query"
+        type: "string"
+        format: "date"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ThanksTerm"
+      x-swagger-router-controller: "Thanks"
+    post:
+      tags:
+      - "Thanks"
+      summary: "v0.1+ | save target term"
+      description: "save target term"
+      operationId: "post__thanks_term"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
+      - name: "id"
+        in: "formData"
+        required: false
+        type: "string"
+      - name: "start_date"
+        in: "formData"
+        required: false
+        type: "string"
+        format: "date"
+      - name: "end_date"
+        in: "formData"
+        required: false
+        type: "string"
+        format: "date"
+      - name: "is_sent"
+        in: "formData"
+        required: false
+        type: "boolean"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ResultMessage"
       x-swagger-router-controller: "Thanks"
 definitions:
   ResultMessage:
@@ -438,19 +503,20 @@ definitions:
         type: "integer"
         format: "int64"
         description: "specific point"
-  Point:
+  ThanksTerm:
     type: "object"
     required:
-    - "point"
-    - "user_name"
+    - "start_date"
+    - "end_date"
     properties:
-      user_name:
+      start_date:
         type: "string"
-        description: "member's user name"
-      point:
-        type: "integer"
-        format: "int64"
-        description: "use peace coin for someone"
+        format: "date"
+      end_date:
+        type: "string"
+        format: "date"
+      is_sent:
+        type: "boolean"
 parameters:
   accessToken:
     name: "token"

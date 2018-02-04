@@ -5,6 +5,10 @@ import requests
 import urllib
 
 
+class ApiException(Exception):
+    pass
+
+
 def call_get_api(url, body={}, header={}):
     # urllib.urlencodeは unicodeを処理できないのでstrで渡すこと
     query_string = urllib.parse.urlencode(body)

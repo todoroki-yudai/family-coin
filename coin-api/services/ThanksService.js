@@ -3,6 +3,7 @@
 var constvalue = require('../lib/const');
 var models = require('../lib/models');
 var mosaic = require("../lib/mosaic");
+var response = require("../lib/response");
 
 const get__thanks_transactions = async (args, res, next) => {
   /**
@@ -17,7 +18,7 @@ const get__thanks_transactions = async (args, res, next) => {
    try {
      // TODO get address from access token. following value is raw address. it's bad source.
      var address = args.token.value;
-     var startingDate = args.starting_date.value
+     var startingDate = args.start_date.value
      var endDate = args.end_date.value
      // can't not use "var". because "ReferenceError: user is not defined" is occured.
      let transactions = await models.Transaction.findAll({
@@ -140,3 +141,84 @@ const post__thanks_send = async (args, res, next) => {
   }
 }
 module.exports.post__thanks_send = post__thanks_send
+
+
+const get__thanks_term = async (args, res, next) => {
+   try {
+     // TODO get address from access token. following value is raw address. it's bad source.
+     var address = args.token.value;
+     var targetDate = args.target_date.value
+     var type = args.type.value
+
+     // TODO: check argument value
+
+     // get term data by targetDate
+     let thanksTerm = null
+     if (type == 'latest') {
+       thanksTerm = await models.ThanksTerm.getLatest()
+     } else {
+       thanksTerm = await models.ThanksTerm.getByTargetData(targetDate)
+     }
+     let body = {};
+     body['application/json'] = thanksTerm;
+
+     res.setHeader('Content-Type', 'application/json');
+     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
+   }
+   catch (err) {
+     console.log(err);
+     let body = {};
+     body['application/json'] = {
+       'result' : 'NG',
+       'message' : err
+     };
+     res.statusCode = 500;
+     res.setHeader('Content-Type', 'application/json');
+     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
+   }
+}
+module.exports.get__thanks_term = get__thanks_term
+
+const post__thanks_term = async (args, res, next) => {
+  try {
+    if (args.id.value) {
+      // update
+      let thanksTerm = await models.ThanksTerm.findOne({
+        where: { id: args.id.value }
+      })
+      if (!thanksTerm) {
+        response.err(res, 'can\'t find data. id = '+args.id.value, 404)
+        return;
+      }
+      // TODO validate values
+      if (args.start_date.value) thanksTerm.start_date = args.start_date.value
+      if (args.end_date.value) thanksTerm.end_date = args.end_date.value
+      if (args.is_sent.value) thanksTerm.is_sent = args.is_sent.value
+
+      thanksTerm.save()
+
+      // return value
+      response.success(res, '')
+    } else {
+      // insert
+      if (!args.start_date.value || !args.end_date.value) {
+        response.err(res, 'start_date, end_date is required', 403)
+        return;
+      }
+      // TODO validate values
+      // TODO range check. Do not overlap periods.
+      await models.ThanksTerm.create({
+        'start_date': args.start_date.value,
+        'end_date': args.end_date.value,
+        'is_sent': args.is_sent.value
+      })
+      // return value
+      response.success(res, '')
+    }
+  }
+  catch (err) {
+    console.log(err);
+    response.err(res, err, 404)
+  }
+}
+module.exports.post__thanks_term = post__thanks_term

@@ -14,7 +14,7 @@ const getBalance = async (address) => {
     var address = new nemlib.Address(address);
     var accountOwnedMosaics = new nemlib.AccountOwnedMosaicsService(new nemlib.AccountHttp(), new nemlib.MosaicHttp());
     accountOwnedMosaics.fromAddress(address).subscribe(function (mosaics) {
-      console.log(mosaics);
+      // console.log(mosaics);
       resolve(mosaics);
     });
   });
@@ -24,7 +24,7 @@ module.exports.getBalance = getBalance
 
 const sendNem  = async (amount, receivedAddress) => {
   return new Promise((resolve, reject) => {
-    // TODO get by host privatekey from os.env.
+    // TODO get by host privatekey from os.env ?
     let account = nemlib.Account.createWithPrivateKey('dab0fe2c58f1153b8bfa73c48b6773d2588ef65ce0d2cecd26fb8e1493df2bc0');
     let tx = nemlib.TransferTransaction.create(
         nemlib.TimeWindow.createWithDeadline(),
@@ -70,10 +70,6 @@ const sendMosaic = async (namespace, mosaicname, address, amount, receivedAddres
       {mosaic: new nemlib.MosaicId(namespace, mosaicname), quantity: amount},
     ]).flatMap(_ => mosaicHttp.getMosaicTransferableWithAmount(_.mosaic,_.quantity))
       .toArray()
-      // .map(mosaics => {
-      //   mosaics.unshift(new nemlib.XEM(0.000001));
-      //   return mosaics;
-      // })
       .map(mosaics => nemlib.TransferTransaction.createWithMosaics(
           nemlib.TimeWindow.createWithDeadline(),
           // new Address("TCFPN2-C43YUE-G4756P-SJ7EVV-VMGB2Y-SP2YJB-Q5E5"), // kazuki
@@ -85,10 +81,23 @@ const sendMosaic = async (namespace, mosaicname, address, amount, receivedAddres
       )
       .map(transaction => account.signTransaction(transaction))
       .flatMap(signedTransaction => transactionHttp.announceTransaction(signedTransaction))
-      .subscribe(nemAnnounceResult => {
-          console.log(nemAnnounceResult);
-          resolve(nemAnnounceResult);
-      });
+      .catch(error => {
+          console.log(`catch: ${error}`);
+          return observable.Observable.throw(error);
+      })
+      .subscribe(
+        value => {
+          console.log(`onNext: ${value}`)
+          resolve(value)
+        },
+        error => {
+          console.log(`onError: ${error}`)
+          reject(`${error}`)
+        },
+        () => {
+          console.log('onCompleted')
+        }
+      );
   })
 }
 module.exports.sendMosaic = sendMosaic

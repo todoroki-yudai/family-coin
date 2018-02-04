@@ -2,7 +2,10 @@
  * manager for sequelize
  */
 
+var moment = require("moment");
+
 var Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 const sequelize = new Sequelize('family', 'root', 'family', {
   host: 'mysql', // TODO: To config
@@ -75,25 +78,45 @@ const Transaction = sequelize.define('transactions', {
 module.exports.Transaction = Transaction
 
 
-// sequelize.query("select * from users").spread((results, metadata) => {
-//   console.log(results);
-//   sequelize.close();
-// })
-
-// syncメソッドは最初の一度切り
-// sequelize.sync(function(errs)
-// {
-//     console.log('DATABASE SYNC', errs);
-// });
-
-/**
- * ユーザーを作成
- */
-// function createUser(name, privateKey) {
-//   // DBにデータ保存
-//   var user = new User({
-//       name: name,
-//       privateKey: privateKey
-//   });
-//   user.save();
-// }
+const ThanksTerm = sequelize.define('thanks_term', {
+  start_date: {
+    type: Sequelize.DATEONLY,
+    get: function() {
+      return moment.utc(this.getDataValue('start_date')).format('YYYY-MM-DD');
+    }
+  },
+  end_date: {
+    type: Sequelize.DATEONLY,
+    get: function() {
+      return moment.utc(this.getDataValue('end_date')).format('YYYY-MM-DD');
+    }
+  },
+  is_sent: {type: Sequelize.BOOLEAN}
+}, {
+  freezeTableName: true,
+  timestamps: false
+});
+ThanksTerm.getLatest = async () => {
+  let result = await ThanksTerm.findOne({
+    order: [[ 'end_date', 'DESC' ]]
+  })
+  return new Promise((resolve, reject) => {
+    resolve(result);
+  });
+};
+ThanksTerm.getByTargetData = async (targetDate) => {
+  let result = await ThanksTerm.findOne({
+    where: {
+      start_date: {
+        [Op.lte]: targetDate
+      },
+      end_date: {
+        [Op.gte]: targetDate
+      }
+    }
+  })
+  return new Promise((resolve, reject) => {
+    resolve(result);
+  });
+};
+module.exports.ThanksTerm = ThanksTerm
