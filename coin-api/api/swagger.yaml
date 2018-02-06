@@ -24,6 +24,11 @@ paths:
       parameters:
       - name: "username"
         in: "formData"
+        description: "designate username."
+        required: true
+        type: "string"
+      - name: "email"
+        in: "formData"
         description: "designate mail_address."
         required: true
         type: "string"
@@ -457,6 +462,8 @@ definitions:
       id:
         type: "integer"
       username:
+        type: "string"
+      email:
         type: "string"
       address:
         type: "string"

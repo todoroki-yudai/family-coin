@@ -18,6 +18,7 @@ module.exports.sequelize = sequelize
 // https://havelog.ayumusato.com/develop/javascript/e232-orm_sequelize_tasting.html
 const User = sequelize.define('users', {
   username: {type: Sequelize.STRING},
+  email: {type: Sequelize.STRING},
   password: {type: Sequelize.STRING},
   address: {type: Sequelize.STRING}
 }, {

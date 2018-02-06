@@ -101,8 +101,9 @@ const post__users_entry = async (args, res, next) => {
    try {
       // create nem address
       let username = args.username.value;
-      // TODO validation password
+      // TODO validation
       let crptoPassword = crypto.generateHash(args.password.value);
+      let email = args.email.value;
 
       // TODO: implement error process
       var simpleWallet = wallet.createSimpleWallet(username, crptoPassword);
@@ -114,6 +115,7 @@ const post__users_entry = async (args, res, next) => {
           'where': {'username': username},
           'defaults': {
             'username': username,
+            'email': email,
             'password': crptoPassword,
             'address': simpleWallet.address.value,
           }
