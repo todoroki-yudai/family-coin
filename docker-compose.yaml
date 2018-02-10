@@ -24,6 +24,8 @@ services:
       - "18080:18080"
     links:
       - mysql
+    environment:
+        SUPERSECRET: "f9,HyK#M"
   coin-app:
     container_name: coin-app
     image: coin-app

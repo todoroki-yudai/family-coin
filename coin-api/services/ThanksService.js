@@ -15,9 +15,13 @@ const get__thanks_transactions = async (args, res, next) => {
    * end_date date
    * returns List
    **/
+   // TODO; move to decorator
+   let values = jwt.verifyAccessToken(args.token.value);
+   if(!values) {
+     response.err(res, new Error('token invalid'), 403)
+     return
+   }
    try {
-     // TODO get address from access token. following value is raw address. it's bad source.
-     var address = args.token.value;
      var startingDate = args.start_date.value
      var endDate = args.end_date.value
      // can't not use "var". because "ReferenceError: user is not defined" is occured.
@@ -60,6 +64,12 @@ const post__thanks_send = async (args, res, next) => {
    * message String
    * returns ResultMessage
    **/
+  // TODO; move to decorator
+  let values = jwt.verifyAccessToken(args.token.value);
+  if(!values) {
+    response.err(res, new Error('token invalid'), 403)
+    return
+  }
   let transaction;
   try {
     // get transaction
@@ -69,8 +79,7 @@ const post__thanks_send = async (args, res, next) => {
       throw new Error('cant send amount 0 or less')
     }
 
-    // TODO: get address from access token. following value is raw address. It's not very well
-    var senderAddress = args.token.value;
+    var senderAddress = values.address;
     var receiverAddress = args.receiver_address.value;
 
     console.log(senderAddress);
@@ -144,42 +153,42 @@ module.exports.post__thanks_send = post__thanks_send
 
 
 const get__thanks_term = async (args, res, next) => {
-   try {
-     // TODO get address from access token. following value is raw address. it's bad source.
-     var address = args.token.value;
-     var targetDate = args.target_date.value
-     var type = args.type.value
+  // TODO; move to decorator
+  let values = jwt.verifyAccessToken(args.token.value);
+  if(!values) {
+    response.err(res, new Error('token invalid'), 403)
+    return
+  }
+  try {
+    // TODO: check argument value
+    var targetDate = args.target_date.value
+    var type = args.type.value
 
-     // TODO: check argument value
-
-     // get term data by targetDate
-     let thanksTerm = null
-     if (type == 'latest') {
-       thanksTerm = await models.ThanksTerm.getLatest()
-     } else {
-       thanksTerm = await models.ThanksTerm.getByTargetData(targetDate)
-     }
-     let body = {};
-     body['application/json'] = thanksTerm;
-
-     res.setHeader('Content-Type', 'application/json');
-     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
-   }
-   catch (err) {
-     console.log(err);
-     let body = {};
-     body['application/json'] = {
-       'result' : 'NG',
-       'message' : err
-     };
-     res.statusCode = 500;
-     res.setHeader('Content-Type', 'application/json');
-     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
-   }
+    // get term data by targetDate
+    let thanksTerm = null
+    if (type == 'latest') {
+      thanksTerm = await models.ThanksTerm.getLatest()
+    } else {
+      thanksTerm = await models.ThanksTerm.getByTargetData(targetDate)
+    }
+    let body = {};
+    body['application/json'] = thanksTerm;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
+  }
+  catch (err) {
+    console.log(err);
+    response.err(res, err, 500)
+  }
 }
 module.exports.get__thanks_term = get__thanks_term
 
 const post__thanks_term = async (args, res, next) => {
+  let values = jwt.verifyAccessToken(args.token.value);
+  if(!values) {
+    response.err(res, new Error('token invalid'), 403)
+    return
+  }
   try {
     if (args.id.value) {
       // update
@@ -218,7 +227,7 @@ const post__thanks_term = async (args, res, next) => {
   }
   catch (err) {
     console.log(err);
-    response.err(res, err, 404)
+    response.err(res, err, 500)
   }
 }
 module.exports.post__thanks_term = post__thanks_term

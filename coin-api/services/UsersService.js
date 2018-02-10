@@ -6,8 +6,10 @@ const Op = Sequelize.Op;
 
 var constvalue = require('../lib/const');
 var crypto = require('../lib/crypto');
+var jwt = require('../lib/jsonwebtoken');
 var models = require('../lib/models');
 var mosaic = require('../lib/mosaic');
+var response = require("../lib/response");
 var wallet = require('../lib/wallet');
 
 const get__users_balances = function(args, res, next) {
@@ -16,13 +18,22 @@ const get__users_balances = function(args, res, next) {
 module.exports.get__users_balances = get__users_balances
 
 const get__users_me_balances = function(args, res, next) {
-  get_users_balances(args, res, next, args.token.value)
+  let values = jwt.verifyAccessToken(args.token.value);
+  if(!values) {
+    response.err(res, new Error('token invalid'), 403)
+    return
+  }
+  get_users_balances(args, res, next, values.address)
 }
 module.exports.get__users_me_balances = get__users_me_balances
 
 const get_users_balances = async(args, res, next, address) => {
+  let values = jwt.verifyAccessToken(args.token.value);
+  if(!values) {
+    response.err(res, new Error('token invalid'), 403)
+    return
+  }
   try {
-    // TODO get address from access token. following value is raw address. it's bad source.
     let startingDate = args.start_date.value
     let endDate = args.end_date.value
     let whereMap = {}
@@ -66,11 +77,15 @@ const get_users_balances = async(args, res, next, address) => {
   }
 }
 
+// TODO: deprecated. merge to get__users_balances
 const get__users_balances_latest = async (args, res, next) => {
+  let values = jwt.verifyAccessToken(args.token.value);
+  if(!values) {
+    response.err(res, new Error('token invalid'), 403)
+    return
+  }
   try {
-    // TODO token check
     let balances = await models.UserBalanceLog.getBalanceLatest()
-
     let body = {};
     body['application/json'] = balances;
 
@@ -155,8 +170,12 @@ module.exports.post__users_entry = post__users_entry
 
 const get__users_me = async (args, res, next) => {
   try {
-    // TODO get address from access token. following value is raw address. it's bad source.
-    var address = args.token.value;
+    let values = jwt.verifyAccessToken(args.token.value);
+    if(!values) {
+      response.err(res, new Error('token invalid'), 403)
+      return
+    }
+    var address = values.address;
     // can't not use "var". because "ReferenceError: user is not defined" is occured.
     let user = await models.User.findOne({ where: {address: address} })
     let walletInfo = await wallet.getInfo(address)
@@ -228,9 +247,14 @@ const get__users_me_transactions = async (args, res, next) => {
    * token String Use this access token to access the API server
    * returns List
    **/
+   // TODO; move to decorator
+   let values = jwt.verifyAccessToken(args.token.value);
+   if(!values) {
+     response.err(res, new Error('token invalid'), 403)
+     return
+   }
+   var address = values.address;
    try {
-     // TODO get address from access token. following value is raw address. it's bad source.
-     let address = args.token.value;
      let startingDate = args.start_date.value
      let endDate = args.end_date.value
      // can't not use "var". because "ReferenceError: user is not defined" is occured.
@@ -283,7 +307,7 @@ module.exports.post__users_login = async(args, res, next) => {
    * openid_access_token String Access token sent from OAuth Server (optional)
    * returns Authorize
    **/
-   console.log(args);
+   try {
     // create nem address
     let username = args.username.value;
     // TODO validation password
@@ -298,9 +322,10 @@ module.exports.post__users_login = async(args, res, next) => {
 
     let values = {};
     if (user) {
+      let jwtValues = jwt.createAccessToken(user)
       values['application/json'] = {
-        'token' : user.address, // TODO: change currect accesstoken
-        'expires_in' : '999999999' // TODO: implement
+        'token' : jwtValues.token,
+        'expires_in' : jwtValues.expiresIn
       };
     }
     else {
@@ -312,6 +337,11 @@ module.exports.post__users_login = async(args, res, next) => {
     }
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(values[Object.keys(values)[0]] || {}, null, 2));
+  }
+  catch (err) {
+    console.log(err);
+    response.err(res, err, 404)
+  }
 }
 
 module.exports.post__users_me_logout = function(args, res, next) {
