@@ -125,7 +125,7 @@ const post__users_entry = async (args, res, next) => {
       console.log(simpleWallet.address.value);
 
       // save user info to database
-      let user, created = await models.User.findOrCreate(
+      let user = await models.User.findOrCreate(
         {
           'where': {'username': username},
           'defaults': {
@@ -146,9 +146,11 @@ const post__users_entry = async (args, res, next) => {
       // }
 
       let values = {};
+
+      let jwtValues = jwt.createAccessToken(user[0])
       values['application/json'] = {
-        'token' : simpleWallet.address.value,
-        'expires_in' : '999999999' // TODO: implements
+        'token' : jwtValues.token,
+        'expires_in' : jwtValues.expiresIn
       };
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(values[Object.keys(values)[0]] || {}, null, 2));

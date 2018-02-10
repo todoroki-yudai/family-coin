@@ -11,7 +11,8 @@ const expiresInHours = 24 * 7 // 1 week
 
 const createAccessToken = function(user) {
   if(!(user instanceof models.User)) {
-    throw new Exception('user parameter must be User Class')
+    console.log(toString.call(user))
+    throw new Error('user parameter must be User Class. object = '+toString.call(user))
   }
   payload = {
     'username': user.username,
