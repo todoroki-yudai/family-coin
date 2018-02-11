@@ -7,7 +7,7 @@ CREATE TABLE users (
   email varchar(255) not null,
   password varchar(255) not null,
   address varchar(255) not null,
-  balance integer not null,
+  balance integer not null default '0',
   created_at datetime not null default current_timestamp,
   updated_at datetime not null default current_timestamp on update current_timestamp,
   deleted_at datetime not null default current_timestamp,
