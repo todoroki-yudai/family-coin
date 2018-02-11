@@ -20,7 +20,8 @@ const User = sequelize.define('users', {
   username: {type: Sequelize.STRING},
   email: {type: Sequelize.STRING},
   password: {type: Sequelize.STRING},
-  address: {type: Sequelize.STRING}
+  address: {type: Sequelize.STRING},
+  balance: {type: Sequelize.INTEGER}
 }, {
   freezeTableName: true,
   timestamps: false

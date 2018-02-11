@@ -4,8 +4,10 @@ use family;
 CREATE TABLE users (
   id int(11) unsigned not null auto_increment,
   username varchar(255) not null,
+  email varchar(255) not null,
   password varchar(255) not null,
   address varchar(255) not null,
+  balance integer not null,
   created_at datetime not null default current_timestamp,
   updated_at datetime not null default current_timestamp on update current_timestamp,
   deleted_at datetime not null default current_timestamp,
@@ -40,5 +42,12 @@ CREATE TABLE thanks_term (
   created_at datetime not null default current_timestamp,
   updated_at datetime not null default current_timestamp on update current_timestamp,
   deleted_at datetime not null default current_timestamp,
+  primary key (id)
+);
+
+CREATE TABLE depreciate_logs (
+  id int(11) unsigned not null auto_increment,
+  balance_log_id integer not null,
+  created_at datetime not null default current_timestamp,
   primary key (id)
 );

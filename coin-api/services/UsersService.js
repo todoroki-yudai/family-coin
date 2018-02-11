@@ -192,7 +192,8 @@ const get__users_me = async (args, res, next) => {
     let body = {};
     // console.log(walletInfo);
     body['application/json'] = {
-      'balance' : walletInfo.balance,
+      // 'balance' : walletInfo.balance,
+      'balance' : user.balance || 0, // TODO: for teaser
       'nem_balance' : walletInfo.nemBalance,
       'address' : walletInfo.address,
       'increase_coin' : -1, // TODO 実装する
