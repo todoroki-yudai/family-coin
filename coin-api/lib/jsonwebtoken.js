@@ -15,6 +15,7 @@ const createAccessToken = function(user) {
     throw new Error('user parameter must be User Class. object = '+toString.call(user))
   }
   payload = {
+    'id': user.id,
     'username': user.username,
     'email': user.email,
     'address': user.address

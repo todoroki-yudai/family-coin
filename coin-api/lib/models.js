@@ -80,6 +80,23 @@ const Transaction = sequelize.define('transactions', {
 module.exports.Transaction = Transaction
 
 
+const Deposit = sequelize.define('deposits', {
+  user_id: {type: Sequelize.INTEGER},
+  currency_type: {type: Sequelize.STRING},
+  amount: {type: Sequelize.INTEGER},
+  deposited_at: {
+    type: Sequelize.DATE,
+    get: function() {
+      return moment.utc(this.getDataValue('deposited_at')).format('YYYY-MM-DD HH:mm:ss');
+    }
+  }
+}, {
+  freezeTableName: true,
+  timestamps: false
+});
+module.exports.Deposit = Deposit
+
+
 const ThanksTerm = sequelize.define('thanks_term', {
   start_date: {
     type: Sequelize.DATEONLY,

@@ -34,6 +34,18 @@ CREATE TABLE transactions (
   primary key (id)
 );
 
+CREATE TABLE deposits (
+  id int(11) unsigned not null auto_increment,
+  user_id int(11) unsigned not null,
+  currency_type varchar(255) not null,
+  amount integer not null,
+  deposited_at datetime not null default current_timestamp,
+  created_at datetime not null default current_timestamp,
+  updated_at datetime not null default current_timestamp on update current_timestamp,
+  deleted_at datetime not null default current_timestamp,
+  primary key (id)
+);
+
 CREATE TABLE thanks_term (
   id int(11) unsigned not null auto_increment,
   start_date datetime not null,

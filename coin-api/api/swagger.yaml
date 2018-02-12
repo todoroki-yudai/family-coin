@@ -213,6 +213,36 @@ paths:
             items:
               $ref: "#/definitions/Transaction"
       x-swagger-router-controller: "Users"
+  /users/me/deposits:
+    get:
+      tags:
+      - "Users"
+      summary: "v0.1+ | Get deposit's record for each user"
+      operationId: "get__users_me_deposits"
+      parameters:
+      - name: "token"
+        in: "header"
+        description: "Use this access token to access the API server"
+        required: true
+        type: "string"
+      - name: "start_date"
+        in: "query"
+        required: false
+        type: "string"
+        format: "date"
+      - name: "end_date"
+        in: "query"
+        required: false
+        type: "string"
+        format: "date"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Deposit"
+      x-swagger-router-controller: "Users"
   /users/me/balances:
     get:
       tags:
@@ -454,6 +484,23 @@ definitions:
       message:
         type: "string"
       created_at:
+        type: "string"
+        format: "date-time"
+  Deposit:
+    type: "object"
+    properties:
+      user_id:
+        type: "integer"
+      amount:
+        type: "integer"
+      currency_type:
+        type: "string"
+        default: "BTC"
+        enum:
+          - "BTC"
+          - "ETH"
+          - "JPY"
+      deposited_at:
         type: "string"
         format: "date-time"
   User:

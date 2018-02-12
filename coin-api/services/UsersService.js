@@ -260,8 +260,6 @@ const get__users_me_transactions = async (args, res, next) => {
    try {
      let startingDate = args.start_date.value
      let endDate = args.end_date.value
-     // can't not use "var". because "ReferenceError: user is not defined" is occured.
-
      let whereMap = {
         [Op.or]: [
           { sender_address: address },
@@ -287,18 +285,51 @@ const get__users_me_transactions = async (args, res, next) => {
    }
    catch (err) {
      console.log(err);
-     let body = {};
-     body['application/json'] = {
-       'result' : 'NG',
-       'message' : err
-     };
-     res.statusCode = 500;
-     res.setHeader('Content-Type', 'application/json');
-     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
+     response.err(res, err, 404)
    }
 
 }
 module.exports.get__users_me_transactions = get__users_me_transactions
+
+const get__users_me_deposits = async (args, res, next) => {
+   try {
+     // TODO; move to decorator for jwt
+     let values = jwt.verifyAccessToken(args.token.value);
+     if(!values) {
+       response.err(res, new Error('token invalid'), 403)
+       return
+     }
+
+     var address = values.address;
+     let userId = values.id;
+     let startingDate = args.start_date.value
+     let endDate = args.end_date.value
+
+     let whereMap = {}
+     whereMap['user_id'] = userId
+     if (startingDate && endDate) {
+       whereMap['deposited_at'] = {$between: [startingDate, endDate]}
+     }
+     else if (startingDate) {
+       whereMap['deposited_at'] = {[gte]: startingDate}
+     }
+     else if (endDate) {
+       whereMap['deposited_at'] = {[lte]: endDate}
+     }
+     let items = await models.Deposit.findAll({ where: whereMap });
+
+     let body = {};
+     body['application/json'] = items;
+     res.setHeader('Content-Type', 'application/json');
+     res.end(JSON.stringify(body[Object.keys(body)[0]] || {}, null, 2));
+   }
+   catch (err) {
+     console.log(err);
+     response.err(res, err, 404)
+   }
+
+}
+module.exports.get__users_me_deposits = get__users_me_deposits
 
 module.exports.post__users_login = async(args, res, next) => {
   /**
